@@ -1,0 +1,1510 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="application-name" content="Check-in Timer">
+<meta name="apple-mobile-web-app-title" content="Check-in Timer">
+<meta name="theme-color" content="#10b981">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<title>止损计时 · Stop-Loss Timer</title>
+<script>
+// 首帧前定主题与语言，防止闪烁
+document.documentElement.dataset.theme = (function() {
+  try { return localStorage.getItem('sl.theme') || 'auto'; } catch(e) { return 'auto'; }
+})();
+(function() {
+  var locale = 'zh-CN';
+  try {
+    var top = localStorage.getItem('sl.locale');
+    if (top === 'en' || top === 'zh-CN') locale = top;
+    else {
+      var raw = localStorage.getItem('sl.settings');
+      var saved = raw ? (JSON.parse(raw) || {}).locale : null;
+      if (saved === 'en' || saved === 'zh-CN') locale = saved;
+    }
+  } catch (e) {}
+  document.documentElement.lang = locale;
+  if (locale === 'en') document.title = 'Check-in Timer · Capture sparks, break the ice';
+})();
+</script>
+<link rel="stylesheet" href="/app/marketing.css?v=20260929_mkt_v2">
+<link rel="stylesheet" href="/app/app.css?v=20260930_v6">
+</head>
+
+<body>
+<!-- 落地页 / 产品介绍主页 -->
+<div id="land">
+<!-- 顶栏导航 -->
+  <header class="site-nav">
+    <div class="site-nav-in">
+      <a class="brand-anchor" href="/">
+        <span class="brand-glyph">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="42 16" opacity="0.85"></circle>
+            <circle cx="12" cy="12" r="4.5" fill="currentColor" opacity="0.18"></circle>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
+            <circle cx="18.5" cy="7.5" r="2" fill="currentColor"></circle>
+          </svg>
+        </span>
+        <span>止损计时 · Stop-Loss Timer</span>
+      </a>
+
+      <nav aria-label="主要导航">
+        <ul class="nav-links">
+          <li class="nav-link-item"><a href="#features" class="nav-scroll-link" id="navFeatLink">特性</a></li>
+          <li class="nav-link-item"><a href="#philosophy" class="nav-scroll-link" id="navPhilLink">设计哲学</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-nav-theme" id="themeBtnLand" type="button" title="切换主题" aria-label="切换主题">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4.5"></circle>
+            <line x1="12" y1="2" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+            <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+            <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+        <div class="lang-dropdown-wrap" id="landLangWrap">
+          <button class="btn-nav-theme btn-nav-lang-drop" id="landLangMenuBtn" type="button" aria-haspopup="menu" aria-expanded="false" title="切换语言 / Switch language">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M3 12h18"></path>
+              <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"></path>
+            </svg>
+          </button>
+          <div class="lang-dropdown-menu" id="landLangMenu" role="menu" aria-label="切换语言" style="display: none;">
+            <button type="button" class="lang-menu-item" data-lang="zh-CN" role="menuitem">
+              <span>简体中文</span>
+              <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            </button>
+            <button type="button" class="lang-menu-item" data-lang="en" role="menuitem">
+              <span>English</span>
+              <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            </button>
+          </div>
+        </div>
+        <button id="landBack" style="display:none"></button>
+        <button class="btn-nav-auth" id="btnOpenAuthModal" type="button">登录 / 注册</button>
+        <button class="btn-nav-cta btn-land-guest" id="landGuest" type="button">进入 Web 版</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 页面主体容器 -->
+  <div class="page-wrap">
+    <!-- Hero 视觉区 -->
+    <section class="hero-section">
+      <span id="landBrandTag" style="display:none"></span>
+      <h1 class="hero-title" id="landHeadline">随时破冰，到点止损</h1>
+      <p class="hero-desc" id="landSub">
+        随手安放灵感火花 · 到点清醒重新决断 · 永不陷入沉没成本
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-hero-primary" id="btnHeroGuest" type="button">
+          <span id="btnHeroGuestText">免登录即刻体验</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+        <button class="btn-hero-secondary btn-land-cta" id="landCta" type="button">
+          <span id="landCtaText">登录 / 注册 同步多端</span>
+        </button>
+      </div>
+
+      <div class="hero-trust-row">
+        <div class="hero-trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span id="heroTrust1">本地优先数据沙盒</span>
+        </div>
+        <div class="hero-trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span id="heroTrust2">核心闭环永久免费</span>
+        </div>
+        <div class="hero-trust-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span id="heroTrust3">轻量单机离线可用</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 原生 macOS 风格 Mockup 展示窗口 -->
+    <div class="mockup-window" aria-label="软件工作台视效展示">
+      <div class="mockup-header">
+        <div class="mockup-traffic-lights">
+          <span class="mockup-traffic-dot dot-red"></span>
+          <span class="mockup-traffic-dot dot-yellow"></span>
+          <span class="mockup-traffic-dot dot-green"></span>
+        </div>
+        <div class="mockup-nav-tabs">
+          <span class="mockup-tab active" id="mockupTab1">破冰专注</span>
+          <span class="mockup-tab" id="mockupTab2">待启灵感池 (12)</span>
+          <span class="mockup-tab" id="mockupTab3">足迹复盘</span>
+        </div>
+        <span class="mockup-status-tag" id="mockupStatusTag">本地优先 · 离线可用</span>
+      </div>
+
+      <div class="mockup-body">
+        <div class="mockup-timer-side">
+          <div class="mockup-tag">
+            <span id="mockupActiveTask">进行中 · 重构核心架构与落地页体验</span>
+          </div>
+
+          <div class="mockup-clock" id="demoLeft">15:00</div>
+          <div class="mockup-timer-sub" id="landDemoTitle">15 分钟时间盒破冰 · 到点强制重新决定</div>
+
+          <div style="height: 4px; background: var(--line); border-radius: var(--radius-full); margin: 24px auto 16px; max-width: 240px; overflow: hidden;">
+            <div id="demoBar" style="height: 100%; width: 68%; background: var(--ink-hi); border-radius: var(--radius-full);"></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-around; font-size: 0.78rem; color: var(--ink3); max-width: 260px; margin: 0 auto;">
+            <span id="mockupSpent">已专注: 10:12</span>
+            <span id="landDemoBadge">状态: 心流推进中</span>
+            <span id="mockupRemain">止损剩余: 04:48</span>
+          </div>
+        </div>
+
+        <div class="mockup-decision-side">
+          <div class="mockup-decision-head" id="mockupHead">时间盒到点 · 重新决定</div>
+          <p class="mockup-decision-desc" id="mockupDesc">
+            时间盒到期时，请遵从真实内心做出平等决断。止损并非失败，而是理智守护精力的明智选择：
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="mockup-choice-btn">
+              <span id="mockupOpt1">势头正盛，顺畅追加 15m</span>
+              <span style="color: var(--ink3);">→</span>
+            </div>
+            <div class="mockup-choice-btn">
+              <span id="mockupOpt2">思路卡壳，换个解法再试</span>
+              <span style="color: var(--ink3);">→</span>
+            </div>
+            <div class="mockup-choice-btn">
+              <span id="mockupOpt3">收益不足，果断止损离场</span>
+              <span style="color: var(--accent-text); font-size: 0.8rem;" id="mockupStopBadge">及时止损</span>
+            </div>
+          </div>
+
+          <button class="btn-tier-cta" id="btnEnterAppFromMockup" type="button" style="margin-bottom: 0; margin-top: 10px; width: 100%;">
+            进入完整工作台体验 →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设计哲学对比区 (Philosophy Contrast) -->
+    <section class="contrast-section" id="philosophy">
+      <div class="section-head">
+        <h2 class="section-title" id="philoTitle">为什么传统番茄钟正在加剧你的内耗？</h2>
+        <p class="section-desc" id="philoDesc">传统工具只记录「坚持了多久」，而止损计时引导你审视「是否值得继续投入」。</p>
+      </div>
+
+      <div class="contrast-grid">
+        <!-- 传统时间管理盲区 -->
+        <div class="contrast-card">
+          <span class="contrast-badge" id="philoTradBadge">传统番茄钟与待办清单</span>
+          <h3 class="contrast-title" id="philoTradTitle">启动阻力巨大，深陷沉没成本陷阱</h3>
+          <ul class="contrast-list">
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span id="philoTrad1"><strong>45分钟高压门槛：</strong>任务稍有复杂性便迟迟不敢开工，陷入严重的启动拖延。</span>
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span id="philoTrad2"><strong>沉没成本绑架：</strong>死磕错误方向，越耗越久越不敢停，最终精疲力竭。</span>
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span id="philoTrad3"><strong>超时虚假勤奋：</strong>超时继续空转，欺骗大脑产生成就感，掩盖低效现实。</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 止损流 -->
+        <div class="contrast-card positive">
+          <span class="contrast-badge" id="philoPosBadge">止损计时专注流</span>
+          <h3 class="contrast-title" id="philoPosTitle">15 分钟微行动破冰，到点平等三向决断</h3>
+          <ul class="contrast-list">
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span id="philoPos1"><strong>15 分钟微行动破冰：</strong>心智阻力降到极低，“先投 15 分钟试试”，拖延瞬间瓦解。</span>
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span id="philoPos2"><strong>给停下以同等尊重：</strong>到点强制三向决断，果断放弃也是胜利，告别自责与内耗。</span>
+            </li>
+            <li>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span id="philoPos3"><strong>超时严厉不计专注：</strong>超时代表犹豫，倒逼你在边界时刻保持清醒与决断力。</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bento Grid 特性展示 -->
+    <section class="bento-section" id="features">
+      <div class="section-head">
+        <h2 class="section-title" id="bentoTitle">为深度思考与微行动量身定制</h2>
+        <p class="section-desc" id="bentoDesc">围绕“安放灵感”与“止损专注”构建的极简闭环。</p>
+      </div>
+
+      <div class="bento-grid">
+        <!-- 卡片 1：待启灵感池 -->
+        <div class="bento-card">
+          <div class="bento-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path>
+              <path d="M9 18h6"></path>
+              <path d="M10 22h4"></path>
+            </svg>
+          </div>
+          <h3 id="bentoCard1Title">待启灵感池 (Idea Pool)</h3>
+          <p id="bentoCard1Desc">
+            闪烁的想法、突然冒出的待办随手存入灵感池，无需纠结分类，不打断当下心流。支持模糊搜索与「随机唤醒」机制，随时击破启动拖延。
+          </p>
+        </div>
+
+        <!-- 卡片 2：15m 时间盒破冰 -->
+        <div class="bento-card">
+          <div class="bento-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h3 id="bentoCard2Title">15m 破冰起步</h3>
+          <p id="bentoCard2Desc">
+            不要预设宏大目标。给任务设定一个 15 分钟最小投入边界，心智阻力瞬间归零，专注自然水到渠成。
+          </p>
+        </div>
+
+        <!-- 卡片 3：全链路想法转化 -->
+        <div class="bento-card">
+          <div class="bento-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"></path>
+              <path d="m19 9-5 5-4-4-3 3"></path>
+            </svg>
+          </div>
+          <h3 id="bentoCard3Title">认知负荷与止损归因</h3>
+          <p id="bentoCard3Desc">
+            全链路统计灵感从“记下想法”到“破冰启动”，再到“果断转向”与“最终成事”的完整历程，看清每一分精力的真实去向。
+          </p>
+        </div>
+
+        <!-- 卡片 4：macOS 菜单栏与全端秒级同步 -->
+        <div class="bento-card">
+          <div class="bento-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <h3 id="bentoCard4Title">macOS 原生常驻 + 全端秒级同步</h3>
+          <p id="bentoCard4Desc">
+            专为 Mac 工作流编译的 Universal 原生客户端。常驻系统顶部菜单栏，抬眼即见；配合 Web PWA 与移动端，多端数据秒级无缝接续。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 真实创作者口碑 -->
+    <section class="contrast-section">
+      <div class="section-head">
+        <h2 class="section-title" id="testiTitle">深受独立创作者与开发者信赖</h2>
+        <p class="section-desc" id="testiDesc">告别内耗，让精力真正汇聚在成事的刀刃上。</p>
+      </div>
+
+      <div class="philosophy-grid">
+        <div class="philosophy-card">
+          <p id="testi1Quote" style="font-size: 0.9rem; color: var(--ink2); line-height: 1.6; margin-bottom: 20px;">
+            “以前经常在一段死代码上硬磕三个小时，越拖越不想停。止损计时的 15 分钟到点强制决断救了我，果断换思路或收尾，每天至少抢回两个小时！”
+          </p>
+          <div id="testi1Author" style="font-size: 0.85rem; font-weight: 600; color: var(--ink-hi);">Leo Zhang · 独立全栈开发者</div>
+        </div>
+
+        <div class="philosophy-card">
+          <p id="testi2Quote" style="font-size: 0.9rem; color: var(--ink2); line-height: 1.6; margin-bottom: 20px;">
+            “写论文最难的就是开工写第一段。设一个 15 分钟时间盒，启动阻力几乎归零。灵感池更是救了我的随笔碎念，用得特别省心。”
+          </p>
+          <div id="testi2Author" style="font-size: 0.85rem; font-weight: 600; color: var(--ink-hi);">Dr. Wen · 计算机视觉学者</div>
+        </div>
+
+        <div class="philosophy-card">
+          <p id="testi3Quote" style="font-size: 0.9rem; color: var(--ink2); line-height: 1.6; margin-bottom: 20px;">
+            “界面非常沉静雅致，放在 macOS 菜单栏毫不违和。多端秒级同步让工作流丝滑衔接，是一款真正尊重创作者专注力的优秀工具。”
+          </p>
+          <div id="testi3Author" style="font-size: 0.85rem; font-weight: 600; color: var(--ink-hi);">Alice Chen · 产品交互设计师</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部行动号召横幅 -->
+    <section class="bottom-cta-section">
+      <div class="bottom-cta-banner">
+        <h2 class="cta-banner-title" id="bannerTitle">停止在死胡同里耗费心力</h2>
+        <p class="cta-banner-desc" id="bannerDesc">
+          今天就给你的精力设个重评点。主流浏览器免登录即开即用。
+        </p>
+        <div class="hero-actions" style="margin-bottom: 0;">
+          <button class="btn-hero-primary" id="btnHeroGuestBottom" type="button">
+            <span id="btnHeroGuestBottomText">免费即刻体验 (Web 版)</span>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 全站统一页脚 -->
+  <footer class="site-footer">
+    <div class="footer-in">
+      <div class="footer-copy" id="landFooterCopy">© 2026 止损计时 · Stop-Loss Timer. 保持觉察，善始善终。</div>
+      <ul class="footer-links">
+        <li><a href="/" id="landFooterHome">首页</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- 隐藏容器：兼容并保留 fillStaticCopy() 所需的钩子元素 -->
+  <div style="display:none;" aria-hidden="true">
+    <ul id="landScenarios"></ul>
+    <div id="landFeatures"></div>
+  </div>
+</div>
+
+<!-- 应用主界面：免登录也能完整使用 -->
+<div id="app" style="display:none">
+  <header class="topbar">
+    <div class="tbin">
+      <a class="brand-group" id="appBrandLink" href="/?land=1" title="返回产品主页">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="brand-logo-svg">
+            <circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="42 16" opacity="0.85"></circle>
+            <circle cx="12" cy="12" r="4.5" fill="currentColor" opacity="0.18"></circle>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
+            <circle cx="18.5" cy="7.5" r="2" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title" id="topBrandTitle"></span>
+          <span class="brand-slogan" id="topBrandSlogan"></span>
+        </div>
+      </a>
+
+      <nav class="main-nav-tabs" role="tablist" aria-label="视图切换">
+        <button class="nav-tab on" id="tabViewNow" type="button" role="tab" aria-selected="true">
+          <span id="navNowText">此时</span>
+          <span class="tab-badge" id="nowBadge" style="display:none">0</span>
+        </button>
+        <button class="nav-tab" id="tabViewPool" type="button" role="tab" aria-selected="false">
+          <span id="navPoolText">灵感池</span>
+          <span class="tab-badge" id="poolBadge">0</span>
+        </button>
+        <button class="nav-tab" id="tabViewReview" type="button" role="tab" aria-selected="false">
+          <span id="navReviewText">记录</span>
+        </button>
+      </nav>
+
+      <div class="top-actions">
+        <button class="energy-pill" id="energyStatusBadge" type="button" title="曜石能量与连击">
+          <span class="energy-pill-section">
+            <svg class="energy-gem-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path>
+            </svg>
+            <span class="energy-val" id="energyStonesVal">0</span>
+          </span>
+          <span class="energy-sep">·</span>
+          <span class="energy-pill-section">
+            <svg class="energy-streak-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+            </svg>
+            <span class="energy-streak" id="energyStreakVal">0</span>
+          </span>
+        </button>
+        <button class="sync-pill" id="syncStatusBadge" type="button">
+          <span class="sync-dot"></span>
+          <span id="syncStatusText"></span>
+        </button>
+        <div class="lang-dropdown-wrap" id="appLangWrap">
+          <button class="btn-app-lang-drop" id="appLangMenuBtn" type="button" aria-haspopup="menu" aria-expanded="false" title="切换语言 / Switch language">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M3 12h18"></path>
+              <path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"></path>
+            </svg>
+          </button>
+          <div class="lang-dropdown-menu" id="appLangMenu" role="menu" aria-label="切换语言" style="display: none;">
+            <button type="button" class="lang-menu-item" data-lang="zh-CN" role="menuitem">
+              <span>简体中文</span>
+              <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            </button>
+            <button type="button" class="lang-menu-item" data-lang="en" role="menuitem">
+              <span>English</span>
+              <svg class="check-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            </button>
+          </div>
+        </div>
+        <button id="settingsBtn" class="top-pill-btn" type="button" title="系统设置">
+          <svg class="settings-cog-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span id="settingsBtnText">设置</span>
+        </button>
+        <button class="theme-toggle-btn" id="themeBtn" type="button" title="切换主题" aria-label="切换主题">
+          <svg class="theme-sun-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path><path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path><path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <svg class="theme-moon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="banner-stack" id="banners"></div>
+
+  <main class="wrap">
+    <!-- 视图 1：现在这一轮 -->
+    <section class="nowcol" id="viewNow">
+      <div class="sect-title-bar">
+        <span class="sect-title" id="nowSectTitle"></span>
+        <button id="btnFsBoard" class="btn-fs-board" type="button" style="display:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          <span id="btnFsBoardText"></span>
+        </button>
+      </div>
+
+      <!-- 倒计时运行列表：第一视觉焦点 -->
+      <ul id="nowlist"></ul>
+
+      <!-- 倒计时进行中的折叠/展开入口 -->
+      <div id="creatorToggleWrap" class="creator-toggle-wrap" style="display:none">
+        <button type="button" id="btnToggleCreator" class="btn-toggle-creator">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span id="btnToggleCreatorText">+ 再设一个提醒</span>
+        </button>
+      </div>
+
+      <div class="creator-card" id="creatorCard">
+        <div class="creator-card-header">
+          <div class="creator-header-content">
+            <span class="creator-card-title" id="lblCreateTitle">起心 · 动念</span>
+            <span class="creator-card-sub" id="lblCreateSub">记下灵感备忘，或设个时限即刻破冰</span>
+          </div>
+          <button type="button" class="btn-card-close" id="btnCancelCreator" title="收起新建 (Esc)" style="display:none" aria-label="收起新建">✕</button>
+        </div>
+
+        <form class="creator-form" id="plannedForm">
+          <span id="lblName" style="display:none"></span>
+          <div class="field-item field-item-hero">
+            <div class="input-name-wrap">
+              <input id="name" autocomplete="off" required aria-required="true" aria-describedby="nameErr">
+            </div>
+            <div class="aerr" id="nameErr" role="alert"></div>
+          </div>
+
+          <!-- 极简启动条 (Launch Compact Bar)：默认高度极小，存念头零噪音 -->
+          <div class="launch-compact-bar" id="launchCompactBar">
+            <button type="button" class="pill-toggle-trigger" id="btnToggleTiming" title="调整专注时长与提醒方式">
+              <svg class="pill-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span class="pill-label" id="currentDurationPill">30 分钟</span>
+              <svg class="pill-chevron-svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+
+            <button type="button" class="pill-toggle-trigger subtle" id="btnToggleHypo" title="加个停下来的条件">
+              <span id="btnToggleHypoText">+ 停下条件</span>
+            </button>
+          </div>
+
+          <!-- 折叠抽屉：默认隐藏，只有当用户点击时才展开 -->
+          <div class="launch-drawer" id="launchDrawer" style="display:none">
+            <!-- 底线条件输入容器 -->
+            <div id="hypoInputContainer" style="display:none" class="drawer-inner-item">
+              <div class="field-label-bar">
+                <label for="hypothesis" class="field-label">
+                  <span id="lblHypo"></span>
+                  <span class="field-badge-opt" id="lblHypoOpt"></span>
+                </label>
+                <button type="button" class="link-toggle-btn subtle" id="btnCloseHypo" aria-label="收起条件">×</button>
+              </div>
+              <div class="input-hypo-wrap">
+                <input id="hypothesis" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- 时限配置面板容器 -->
+            <div id="timingDrawerPanel" style="display:none" class="drawer-inner-item">
+              <div class="timing-control-section">
+                <div class="timing-tabs-bar" role="tablist" aria-label="设点方式">
+                  <button type="button" class="timing-tab on" id="tabTimingDur" role="tab" aria-selected="true">
+                    <span id="tabTimingDurText">多久之后</span>
+                  </button>
+                  <button type="button" class="timing-tab" id="tabTimingWhen" role="tab" aria-selected="false">
+                    <span id="tabTimingWhenText">指定时刻</span>
+                  </button>
+                </div>
+
+                <div id="timingDurPanel" class="timing-panel">
+                  <div class="time-dim-group">
+                    <span class="dim-label" id="lblDur" style="display:none"></span>
+                    <div class="dur-row-inner">
+                      <div class="dur-chips-wrap">
+                        <button type="button" class="chip" data-min="15"></button>
+                        <button type="button" class="chip on" data-min="30"></button>
+                        <button type="button" class="chip" data-min="45"></button>
+                        <button type="button" class="chip" data-min="60"></button>
+                      </div>
+                      <span class="dur-or-label" id="lblOr"></span>
+                      <div class="custom-dur-field">
+                        <input id="dur" inputmode="numeric" value="30" aria-label="">
+                        <span class="dur-unit-label" id="lblDurUnit"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="timingWhenPanel" class="timing-panel" style="display:none">
+                  <div class="time-dim-group">
+                    <span class="dim-label" id="lblWhen"></span>
+                    <div class="when-input-field">
+                      <svg class="when-clock-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      <input id="when" type="datetime-local" class="native-when-input-visible" aria-label="">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row action-row-dual">
+            <button type="button" class="btn-save-ondeck" id="btnSaveOnDeck" title="存入待启池，随时可唤醒 (Shift+Enter)">
+              <svg class="save-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+              </svg>
+              <span id="btnSaveOnDeckText">存入待启</span>
+            </button>
+            <button class="btn-start" type="submit" id="btnStartSubmit" title="即刻启动专注 (Enter)">
+              <svg class="start-btn-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span id="startSubmitText"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- 视图 2：独立灵感池空间 (Idea Pool) -->
+    <section class="poolcol" id="viewPool" style="display:none">
+      <div class="sect-title-bar">
+        <div class="sect-title-group">
+          <span class="sect-title" id="poolSectTitle">待启灵感池</span>
+          <span class="sect-subtitle" id="poolSectSubtitle">零负担安放闪现火花；想开始时，一键破冰启动</span>
+        </div>
+        <button type="button" class="btn-random-wake" id="btnRandomWakePool" title="随机唤醒一个待启念头开启专注">
+          <svg class="random-spark-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"></path>
+          </svg>
+          <span id="btnRandomWakePoolText">随机唤醒</span>
+        </button>
+      </div>
+
+      <!-- 灵感池顶部「+ 记一笔」快捷录入条 -->
+      <div class="pool-quick-add-card">
+        <div class="pool-quick-add-wrap">
+          <input type="text" id="poolQuickInput" class="pool-quick-input" placeholder="写下一个闪现的想法、备忘或灵感… (回车存入)" autocomplete="off">
+          <button type="button" id="btnPoolQuickSave" class="btn-pool-quick-save">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span id="btnPoolQuickSaveText">存入灵感池</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 访客容量与云同步柔性提醒条 (仅在 Guest 且存有 3+ 条灵感时优雅出现) -->
+      <div class="pool-nudge-bar" id="poolNudgeBar" style="display:none">
+        <div class="pool-nudge-content">
+          <span class="pool-nudge-icon">💡</span>
+          <span class="pool-nudge-text" id="poolNudgeText">已暂存 3 条念头 · 建议免费登录云端，防止浏览器清理缓存丢失数据</span>
+        </div>
+        <button type="button" class="btn-pool-nudge-login" id="btnPoolNudgeLogin">免费登录同步</button>
+      </div>
+
+      <!-- 灵感搜索与统计栏 -->
+      <div class="pool-toolbar">
+        <div class="pool-search-wrap">
+          <svg class="pool-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="poolSearchInput" class="pool-search-input" placeholder="搜索灵感念头…" autocomplete="off">
+        </div>
+        <div class="pool-count-badge" id="poolCountBadge">0 个待启念头</div>
+      </div>
+
+      <!-- 灵感列表：每个条目只保留最高频的一个主按钮「▶ 启动」 -->
+      <div class="ondeck-card pool-container-card" id="onDeckCard">
+        <ul class="ondeck-list" id="onDeckList"></ul>
+      </div>
+    </section>
+
+    <!-- 视图 3：决策足迹 · 复盘与转化漏斗 -->
+    <section class="histcol" id="viewReview" style="display:none">
+      <!-- 差异化王牌：想法转化漏斗 (Idea Conversion Funnel) -->
+      <div class="funnel-card" id="conversionFunnelCard">
+        <div class="funnel-header">
+          <div class="funnel-title-group">
+            <div class="funnel-badge-row">
+              <span class="funnel-badge" id="funnelBadgeText">全链路统计</span>
+              <span class="funnel-highlight-tag" id="funnelInsight">守住沉没成本</span>
+            </div>
+            <h3 class="funnel-title" id="funnelTitle">想法转化漏斗</h3>
+            <p class="funnel-subtitle" id="funnelSubtitle">从念头闪现到做成收官的全链路止损追踪</p>
+          </div>
+        </div>
+
+        <div class="funnel-steps" id="funnelSteps">
+          <div class="funnel-step">
+            <span class="funnel-step-label">
+              <svg class="funnel-step-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>
+              <span id="funnelStep1Label">记下想法</span>
+            </span>
+            <span class="funnel-step-num" id="funnelRecordedNum">0</span>
+            <span class="funnel-step-sub" id="funnelStep1Sub">个灵感入袋</span>
+          </div>
+          <div class="funnel-step-arrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-label">
+              <svg class="funnel-step-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span id="funnelStep2Label">破冰启动</span>
+            </span>
+            <span class="funnel-step-num" id="funnelLaunchedNum">0</span>
+            <span class="funnel-step-sub" id="funnelLaunchRate">启动转化 0%</span>
+          </div>
+          <div class="funnel-step-arrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+          <div class="funnel-step">
+            <span class="funnel-step-label">
+              <svg class="funnel-step-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span id="funnelStep3Label">及时止损</span>
+            </span>
+            <span class="funnel-step-num" id="funnelStoppedNum">0</span>
+            <span class="funnel-step-sub" id="funnelStopRate">理性转向/收场</span>
+          </div>
+          <div class="funnel-step-arrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </div>
+          <div class="funnel-step highlighted">
+            <span class="funnel-step-label">
+              <svg class="funnel-step-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span id="funnelStep4Label">顺畅做成</span>
+            </span>
+            <span class="funnel-step-num" id="funnelCompletedNum">0</span>
+            <span class="funnel-step-sub" id="funnelCompleteRate">最终成事 0%</span>
+          </div>
+        </div>
+
+        <div class="funnel-progress-wrap">
+          <div class="funnel-progress-track">
+            <div class="funnel-bar-segment segment-launch" id="funnelBarLaunch" style="width: 0%" title="启动率"></div>
+            <div class="funnel-bar-segment segment-stop" id="funnelBarStop" style="width: 0%" title="止损保护"></div>
+            <div class="funnel-bar-segment segment-complete" id="funnelBarComplete" style="width: 0%" title="做成闭环"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sect-title-bar">
+        <div class="sect-title-group">
+          <span class="sect-title" id="reviewSectTitle"></span>
+          <span class="sect-subtitle" id="reviewSectSubtitle">记录每一次主动停下与转向，看清时间去向</span>
+        </div>
+        <div class="rv-menu-wrap">
+          <button class="link-btn" id="reviewMenuBtn" type="button" aria-expanded="false" aria-controls="reviewMenu"></button>
+          <div class="rv-menu" id="reviewMenu" hidden role="menu"></div>
+        </div>
+      </div>
+
+      <div class="rv-card" id="reviewList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-note">
+      <span>⏱</span>
+      <span id="footerNote"></span>
+    </div>
+    <div class="footer-links-row">
+      <button class="lang-link footer-lang-link" id="footerLangLink" type="button"></button>
+    </div>
+  </footer>
+</div>
+
+<!-- 全屏沉浸看板 -->
+<div id="fsOverlay" class="fs-overlay" style="display:none">
+  <div class="fs-aura" id="fsAura"></div>
+
+  <header class="fs-header">
+    <div class="fs-brand">
+      <div class="fs-brand-logo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <span class="fs-brand-text" id="fsBrandText"></span>
+      <span class="fs-state-pill" id="fsStatusPill"></span>
+    </div>
+
+    <div class="fs-mode-tabs" id="fsModeTabs" style="display:none">
+      <button class="fs-mode-btn on" id="fsModeSingleBtn" type="button"></button>
+      <button class="fs-mode-btn" id="fsModeGridBtn" type="button"></button>
+    </div>
+
+    <div class="fs-top-right">
+      <div class="fs-clock-wall" id="fsWallClock">00:00</div>
+      <button class="theme-toggle-btn fs-theme-toggle" id="themeBtnFs" type="button" title="切换主题" aria-label="切换主题" style="margin-right:8px">
+        <svg class="theme-sun-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path><path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path><path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <svg class="theme-moon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+      <button class="fs-btn-exit" id="fsPipBtn" type="button" style="display:none;margin-right:8px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <rect x="11" y="9" width="8" height="6" rx="1" ry="1"></rect>
+        </svg>
+        <span id="fsPipBtnText"></span>
+      </button>
+      <button class="fs-btn-exit" id="fsCloseBtn" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span id="fsCloseBtnText"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="fs-stage fs-stage-single" id="fsStageSingle">
+    <div class="fs-single-inner">
+      <div class="fs-anchor-bar is-quote" id="fsAnchorBar">
+        <div class="fs-anchor-content" id="fsAnchorContent">
+          <span class="fs-anchor-quote" id="fsMindsetPrompt"></span>
+        </div>
+      </div>
+
+      <h1 class="fs-task-title" id="fsTaskTitle"></h1>
+
+      <div class="fs-countdown-wrap">
+        <div class="fs-countdown-display" id="fsCountdown">00:00</div>
+      </div>
+
+      <div class="fs-timeline-container">
+        <div class="fs-timeline-endpoints">
+          <span class="fs-time-start" id="fsTimeStart"></span>
+          <span class="fs-time-progress-text" id="fsTimeProgressText"></span>
+          <span class="fs-time-end" id="fsTimeEnd"></span>
+        </div>
+        <div class="fs-timeline-track">
+          <div class="fs-timeline-bar" id="fsTimelineBar"></div>
+        </div>
+      </div>
+
+      <div class="fs-metrics-grid">
+        <div class="fs-metric-card">
+          <span class="fs-metric-label" id="fsLblCheckin"></span>
+          <span class="fs-metric-val" id="fsMetricCheckin">--:--</span>
+        </div>
+        <div class="fs-metric-card">
+          <span class="fs-metric-label" id="fsLblElapsed"></span>
+          <span class="fs-metric-val" id="fsMetricElapsed">00:00</span>
+        </div>
+        <div class="fs-metric-card">
+          <span class="fs-metric-label" id="fsLblCum"></span>
+          <span class="fs-metric-val" id="fsMetricCum">--</span>
+        </div>
+        <div class="fs-metric-card">
+          <span class="fs-metric-label" id="fsLblOverdue"></span>
+          <span class="fs-metric-val" id="fsMetricOverdue">--</span>
+        </div>
+      </div>
+
+      <div class="fs-action-bar">
+        <button class="fs-act-btn fs-act-done" id="fsDoneBtn" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3.5"></circle>
+          </svg>
+          <span id="fsDoneBtnText"></span>
+        </button>
+        <button class="fs-act-btn fs-act-switch" id="fsSwitchBtn" type="button" style="display:none">
+          <span id="fsSwitchBtnText">换个办法</span>
+        </button>
+        <button class="fs-act-btn fs-act-continue" id="fsContinueBtn" type="button" style="display:none">
+          <span id="fsContinueBtnText">+15 分钟</span>
+        </button>
+        <button class="fs-act-btn fs-act-abandon" id="fsAbandonBtn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span id="fsAbandonBtnText"></span>
+        </button>
+      </div>
+
+      <div class="fs-switcher-bar" id="fsSwitcherBar"></div>
+
+      <div class="fs-keyboard-hint">
+        <span>ESC</span>
+        <span class="fs-kb-multi" id="fsKbMulti">· ← → · G</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fs-stage fs-stage-grid" id="fsStageGrid" style="display:none">
+    <div class="fs-grid-inner">
+      <div class="fs-grid-header">
+        <h2 class="fs-grid-title" id="fsGridTitle"></h2>
+        <span class="fs-grid-subtitle" id="fsGridSubtitle"></span>
+      </div>
+      <div class="fs-grid-container" id="fsGridContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 画中画渲染通道 -->
+<canvas id="pipCanvas" width="512" height="288" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-9999"></canvas>
+<video id="pipVideo" autoplay muted playsinline style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.001;pointer-events:none;z-index:-9999"></video>
+
+<!-- 统一重评面板：到点、提前收尾、全屏、画中画、列表上的继续都走这里 -->
+<div id="raOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="raTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="raTitle">
+          <span style="font-size:18px">⏱</span>
+          <span id="raTitleText"></span>
+        </div>
+        <div class="decision-sub" id="raSub"></div>
+      </div>
+      <button class="decision-btn-close" id="raCloseBtn" type="button" aria-label="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="decision-task-pill">
+      <div class="decision-pill-name" id="raTaskName"></div>
+      <div class="decision-pill-time" id="raTaskTime"></div>
+    </div>
+
+    <div class="decision-hypo-box" id="raHypoBox" style="display:none">
+      <span class="decision-hypo-tag" id="raHypoTag"></span>
+      <span class="decision-hypo-text" id="raHypoText"></span>
+    </div>
+
+    <div class="decision-hypo-box" id="raReminderBox" style="display:none">
+      <span class="decision-hypo-tag">💬</span>
+      <span class="decision-hypo-text" id="raReminderText"></span>
+    </div>
+
+    <div class="ra-actions">
+      <button class="ra-act" id="raActStop" type="button" data-kind="stop">
+        <span class="ra-act-title" id="raActStopTitle"></span>
+        <span class="ra-act-hint" id="raActStopHint"></span>
+      </button>
+      <button class="ra-act" id="raActSwitch" type="button" data-kind="switch">
+        <span class="ra-act-title" id="raActSwitchTitle"></span>
+        <span class="ra-act-hint" id="raActSwitchHint"></span>
+      </button>
+      <button class="ra-act" id="raActContinue" type="button" data-kind="continue">
+        <span class="ra-act-title" id="raActContinueTitle"></span>
+        <span class="ra-act-hint" id="raActContinueHint"></span>
+      </button>
+    </div>
+
+    <div class="ra-panel" id="raStopPanel" style="display:none">
+      <label class="ra-check">
+        <input type="checkbox" id="raLater">
+        <span>
+          <span id="raLaterLabel"></span>
+          <span class="ra-check-hint" id="raLaterHint"></span>
+        </span>
+      </label>
+      <label class="ra-check">
+        <input type="checkbox" id="raCompleted">
+        <span id="raCompletedLabel"></span>
+      </label>
+    </div>
+
+    <div class="ra-panel" id="raSwitchPanel" style="display:none">
+      <div class="ra-switch-guide">
+        <span class="ra-switch-guide-title">💡 承认当前路径卡壳，是避免沉没成本的第一步</span>
+        <span class="ra-switch-guide-desc">确认后上一轮将沉淀归档，并自动为你准备新一轮专注。</span>
+      </div>
+      <div class="ra-switch-input-wrap">
+        <label class="ra-field-label" for="raNextHypo">接下来换什么思路？（可以稍后填）</label>
+        <input class="ra-input" id="raNextHypo" autocomplete="off" placeholder="比如：换用其它开源库 / 请教他人 / 从最简 Demo 做起">
+      </div>
+    </div>
+
+    <div class="ra-panel" id="raContinuePanel" style="display:none">
+      <div class="ra-chips">
+        <button type="button" class="chip on" data-add="5"></button>
+        <button type="button" class="chip" data-add="15"></button>
+        <button type="button" class="chip" data-add="30"></button>
+        <span class="ra-field-label" id="raContinueCustomLabel"></span>
+        <input class="ra-input ra-num" id="raContinueCustom" inputmode="numeric" aria-label="">
+        <span class="ra-field-label" id="raContinueUnit"></span>
+      </div>
+    </div>
+
+    <details class="ra-optional-details" id="raOptionalDetails" style="display:none">
+      <summary class="ra-optional-summary" id="raOptionalSummary"></summary>
+      <div id="raOptional">
+        <span class="ra-check-hint" id="raOptionalHint"></span>
+
+        <div class="ra-panel" id="raPriorBox" style="display:none">
+          <label class="ra-field-label" for="raPrior" id="raPriorLabel"></label>
+          <input class="ra-input" id="raPrior" autocomplete="off" inputmode="numeric">
+          <span class="ra-check-hint" id="raPriorHint"></span>
+        </div>
+
+        <div class="ra-panel">
+          <label class="ra-field-label" for="raExpectation" id="raExpectationLabel"></label>
+          <input class="ra-input" id="raExpectation" autocomplete="off">
+        </div>
+
+        <div class="ra-panel" id="raNotePanel">
+          <label class="ra-field-label" for="raNote" id="raNoteLabel"></label>
+          <input class="ra-input" id="raNote" autocomplete="off">
+        </div>
+      </div>
+    </details>
+
+    <div class="ra-foot">
+      <span class="ra-err" id="raErr" role="alert"></span>
+      <button type="button" class="btn-verdict-back" id="raLaterBtn"></button>
+      <button type="button" class="decision-confirm-btn btn-ok" id="raConfirmBtn"></button>
+    </div>
+  </div>
+</div>
+
+<!-- 登录时的访客数据三选一 -->
+<div id="guestOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="guestTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="guestTitle"><span id="guestTitleText"></span></div>
+        <div class="decision-sub" id="guestHint"></div>
+      </div>
+    </div>
+    <div class="choice-grid" style="margin-top:16px">
+      <button class="choice-card" type="button" data-choice="merge">
+        <span class="choice-title" id="guestMergeTitle"></span>
+      </button>
+      <button class="choice-card" type="button" data-choice="cloud">
+        <span class="choice-title" id="guestCloudTitle"></span>
+        <span class="choice-hint" id="guestCloudHint"></span>
+      </button>
+      <button class="choice-card" type="button" data-choice="local">
+        <span class="choice-title" id="guestLocalTitle"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置面板 -->
+<div id="settingsOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="setTitle"><span id="setTitleText"></span></div>
+      </div>
+      <button class="decision-btn-close" id="setCloseBtn" type="button" aria-label="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <details class="set-group" id="setAccountGroup" open>
+      <summary class="set-group-title" id="setAccountTitle"></summary>
+      <div class="set-group-body">
+        <div class="set-row" id="setAccountSignedInRow" hidden>
+          <span class="set-label">
+            <span id="acctLabel"></span>
+            <b id="acctName"></b>
+          </span>
+          <span class="set-field"><button class="rv-act" id="aOut2" type="button"></button></span>
+        </div>
+        <div class="set-row" id="setAccountSignInRow">
+          <span class="set-label"><span class="set-help" id="setAccountSignInLabel"></span></span>
+          <span class="set-field"><button class="rv-act" id="setSignInBtn" type="button"></button></span>
+        </div>
+        <div class="set-row" id="setRecoveryRow" hidden>
+          <label class="set-label">
+            <span id="setRecoveryLabel"></span>
+            <span class="set-help" id="setRecoveryHelp"></span>
+          </label>
+          <span class="set-field"><button class="rv-act" id="setRecoveryBtn" type="button"></button></span>
+        </div>
+      </div>
+    </details>
+
+    <details class="set-group">
+      <summary class="set-group-title" id="setReminderTitle"></summary>
+      <div class="set-group-body">
+        <div class="set-row">
+          <label class="set-label" for="setMaxAlerts" id="setMaxAlertsLabel"></label>
+          <span class="set-field"><input type="number" id="setMaxAlerts" min="0" max="10" step="1"></span>
+        </div>
+        <div class="set-row">
+          <label class="set-label" for="setInterval" id="setIntervalLabel"></label>
+          <span class="set-field"><input type="number" id="setInterval" min="10" max="600" step="5"></span>
+        </div>
+        <div class="set-row">
+          <label class="set-label" for="setMuted" id="setMutedLabel"></label>
+          <span class="set-field"><input type="checkbox" id="setMuted"></span>
+        </div>
+
+        <div class="lock-row" id="soundLockRow" hidden>
+          <span class="lock-tag" id="soundLockTag"></span>
+          <span class="lock-text" id="soundLockText"></span>
+          <button class="rv-act" id="soundLockGo" type="button"></button>
+        </div>
+        <div id="proReminderBox">
+          <div class="set-row">
+            <label class="set-label" for="setPreAlert">
+              <span id="setPreAlertLabel"></span>
+              <span class="set-help" id="setPreAlertHelp"></span>
+            </label>
+            <span class="set-field"><select id="setPreAlert"></select></span>
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setSound">
+              <span id="setSoundLabel"></span>
+              <span class="set-help" id="setSoundHelp"></span>
+            </label>
+            <span class="set-field"><select id="setSound"></select></span>
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setSoundFile">
+              <span id="setSoundImportLabel"></span>
+              <span class="set-help" id="setSoundImportHelp"></span>
+            </label>
+            <span class="set-field"><input type="file" id="setSoundFile"></span>
+          </div>
+          <div class="pro-note" id="setSoundNote" role="status"></div>
+          <div class="tpl-list" id="soundList"></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="set-group">
+      <summary class="set-group-title" id="setLanguageTitle"></summary>
+      <div class="set-group-body">
+        <div class="set-row">
+          <label class="set-label" for="setLanguage">
+            <span class="set-help" id="setLanguageHelp"></span>
+          </label>
+          <span class="set-field"><select id="setLanguage" aria-label=""></select></span>
+        </div>
+      </div>
+    </details>
+
+    <details class="set-group">
+      <summary class="set-group-title" id="setRulesTitle"></summary>
+      <div class="set-group-body">
+        <p class="set-help" id="setRulesHelp"></p>
+        <div class="rv-toolbar">
+          <button class="rv-act" id="setTemplatesBtn" type="button"></button>
+          <button class="rv-act" id="setAdvBtn" type="button"></button>
+        </div>
+      </div>
+    </details>
+
+    <details class="set-group">
+      <summary class="set-group-title" id="setDataTitle"></summary>
+      <div class="set-group-body">
+        <div class="rv-toolbar">
+          <button class="rv-act" id="setExportBtn" type="button"></button>
+          <button class="rv-act" id="setClearBtn" type="button"></button>
+        </div>
+      </div>
+    </details>
+
+    <details class="set-group">
+      <summary class="set-group-title" id="setAnalyticsTitle"></summary>
+      <div class="set-group-body">
+        <div class="set-row">
+          <label class="set-label" for="setAnalytics">
+            <span class="set-help" id="setAnalyticsHelp"></span>
+          </label>
+          <span class="set-field"><input type="checkbox" id="setAnalytics" aria-label=""></span>
+        </div>
+      </div>
+    </details>
+
+    <div class="set-group pro-gateway-card" id="setProGroup">
+      <div class="pro-gateway-header">
+        <div class="pro-gateway-meta">
+          <span class="pro-pill-badge">PRO</span>
+          <span class="set-group-title" id="setProTitle"></span>
+        </div>
+        <span class="pro-badge" id="proSettingsBadge"></span>
+      </div>
+      <p class="pro-gateway-desc" id="proGatewayDesc"></p>
+      <div class="pro-gateway-act">
+        <button class="rv-act pro-cta-primary" id="btnSettingsOpenPro" type="button"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 今日复盘简报 -->
+<div id="briefingOverlay" class="briefing-overlay" style="display:none">
+  <div class="briefing-modal" role="dialog" aria-modal="true" aria-labelledby="briefingTitle">
+    <div class="briefing-card-render" id="briefingCardRender">
+      <div class="briefing-head-bar">
+        <div class="briefing-brand">
+          <span class="brand-logo" style="width:26px;height:26px;font-size:13px">⏱</span>
+          <span id="briefingTitle"></span>
+        </div>
+        <div class="briefing-date" id="briefingDate"></div>
+      </div>
+
+      <div class="briefing-stats-grid" id="briefingStats"></div>
+
+      <div class="briefing-list-box">
+        <div class="briefing-list-title" id="briefingListTitle"></div>
+        <div id="briefingItemList"></div>
+      </div>
+
+      <div class="briefing-footer-quote" id="briefingFooter"></div>
+    </div>
+
+    <div class="briefing-act-bar">
+      <button class="btn-briefing-copy" id="btnBriefingCopy" type="button"><span id="btnBriefingCopyText"></span></button>
+      <button class="btn-briefing-img primary" id="btnBriefingExportImg" type="button"><span id="btnBriefingImgText"></span></button>
+      <button class="btn-briefing-copy" id="btnBriefingClose" type="button"><span id="btnBriefingCloseText"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 找回码明文 -->
+<div id="recoveryOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="rcTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="rcTitle"><span id="rcTitleText"></span></div>
+        <div class="decision-sub" id="rcShownHint"></div>
+      </div>
+    </div>
+    <div class="ra-panel" style="margin-top:16px">
+      <code class="recovery-code" id="rcValue"></code>
+    </div>
+    <div class="ra-foot">
+      <button type="button" class="btn-verdict-back" id="rcDoneBtn"></button>
+      <button type="button" class="decision-confirm-btn btn-ok" id="rcCopyBtn"></button>
+    </div>
+  </div>
+</div>
+
+<!-- 个人重评规则（Pro） -->
+<div id="templateOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="tplTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="tplTitle"><span id="tplTitleText"></span></div>
+        <div class="decision-sub" id="tplHint"></div>
+      </div>
+      <button class="decision-btn-close" id="tplCloseBtn" type="button" aria-label="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="set-group" style="margin-top:24px">
+      <span class="set-group-title" id="tplBuiltinTitle"></span>
+      <span class="set-help" id="tplBuiltinHint"></span>
+      <div class="tpl-list" id="tplBuiltinList"></div>
+    </div>
+
+    <div class="set-group" style="margin-top:24px">
+      <span class="set-group-title" id="tplMineTitle"></span>
+      <div class="lock-row" id="tplLockRow" hidden>
+        <span class="lock-tag" id="tplLockTag"></span>
+        <span class="lock-text" id="tplLockText"></span>
+        <button class="rv-act" id="tplLockGo" type="button"></button>
+      </div>
+      <div class="tpl-list" id="tplMineList"></div>
+
+      <div class="tpl-editor" id="tplEditor">
+        <div class="tpl-field">
+          <label for="tplName" id="tplNameLabel"></label>
+          <input id="tplName" autocomplete="off" aria-describedby="tplNameErr">
+          <div class="field-err" id="tplNameErr" role="alert"></div>
+        </div>
+        <div class="tpl-field">
+          <label for="tplHypo" id="tplHypoLabel"></label>
+          <input id="tplHypo" autocomplete="off">
+        </div>
+        <div class="tpl-field">
+          <label for="tplReminder" id="tplReminderLabel"></label>
+          <input id="tplReminder" autocomplete="off">
+        </div>
+        <div class="tpl-field">
+          <label for="tplScene" id="tplSceneLabel"></label>
+          <select id="tplScene"></select>
+        </div>
+        <div class="tpl-field">
+          <label for="tplDurations" id="tplDurationsLabel"></label>
+          <input id="tplDurations" autocomplete="off" inputmode="numeric">
+        </div>
+        <div class="ra-foot">
+          <button type="button" class="btn-verdict-back" id="tplResetBtn"></button>
+          <button type="button" class="decision-confirm-btn btn-ok" id="tplSaveBtn"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 高级复盘（Pro） -->
+<div id="advOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal" role="dialog" aria-modal="true" aria-labelledby="advTitle">
+    <div class="decision-head">
+      <div class="decision-title-group">
+        <div class="decision-title" id="advTitle"><span id="advTitleText"></span></div>
+        <div class="decision-sub" id="advHint"></div>
+      </div>
+      <button class="decision-btn-close" id="advCloseBtn" type="button" aria-label="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="lock-row" id="advLockRow" hidden style="margin-top:16px">
+      <span class="lock-tag" id="advLockTag"></span>
+      <span class="lock-text" id="advLockText"></span>
+      <button class="rv-act" id="advLockGo" type="button"></button>
+    </div>
+
+    <div id="advBody">
+      <div class="adv-toolbar" style="margin-top:16px">
+        <span class="adv-section-title" id="advRangeLabel"></span>
+        <button class="rv-act" data-range="7" type="button"></button>
+        <button class="rv-act" data-range="30" type="button"></button>
+        <button class="rv-act" data-range="0" type="button"></button>
+      </div>
+
+      <div class="set-group" style="margin-top:24px">
+        <span class="set-group-title" id="advSceneTitle"></span>
+        <div class="adv-legend" id="advLegend"></div>
+        <div class="adv-section" id="advScenes"></div>
+      </div>
+
+      <div class="set-group" style="margin-top:24px">
+        <span class="set-group-title" id="advHourTitle"></span>
+        <div class="adv-hours" id="advHours"></div>
+        <div class="adv-hour-axis" id="advHourAxis"></div>
+      </div>
+
+      <div class="set-group" style="margin-top:24px">
+        <span class="set-group-title" id="advRepeatTitle"></span>
+        <span class="set-help" id="advRepeatHint"></span>
+        <div class="adv-section" id="advRepeats"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 曜石能量浮层 -->
+<div id="energyOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal energy-modal" role="dialog" aria-modal="true" aria-labelledby="energyModalBrand">
+    <div class="decision-head">
+      <div class="pro-modal-brand">
+        <span class="pro-pill-badge" id="energyModalBrand">曜石能量</span>
+      </div>
+      <button class="decision-btn-close" id="energyCloseBtn" type="button" aria-label="close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="pro-modal-body">
+      <div class="pro-features-grid">
+        <div class="pro-feature-card">
+          <div class="pro-feature-top"><span class="pro-feature-icon">✦</span><span class="pro-feature-name">曜石能量</span></div>
+          <div class="pro-feature-desc" id="modalEnergyStones">15</div>
+        </div>
+        <div class="pro-feature-card">
+          <div class="pro-feature-top"><span class="pro-feature-icon">🔥</span><span class="pro-feature-name">专注连击</span></div>
+          <div class="pro-feature-desc" id="modalEnergyStreak">0 天</div>
+        </div>
+        <div class="pro-feature-card">
+          <div class="pro-feature-top"><span class="pro-feature-icon">🛡️</span><span class="pro-feature-name">连击保护</span></div>
+          <div class="pro-feature-desc" id="modalFreezeCount">1 张</div>
+        </div>
+      </div>
+      <p class="set-help">破冰启动、清醒决断、念头入库都会获得曜石奖励；每天保持专注可以累计连击天数。</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- 通用优雅确认浮层 (替代原生 window.confirm) -->
+<div id="confirmOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="confirm-modal-icon">⚠️</div>
+    <h3 class="confirm-modal-title" id="confirmModalTitle">确认取消这一轮？</h3>
+    <p class="confirm-modal-desc" id="confirmModalDesc">记录会保留「已取消」状态，不计入使用统计。</p>
+    <div class="confirm-modal-actions">
+      <button type="button" class="btn-cancel" id="btnConfirmCancel">继续专注</button>
+      <button type="button" class="btn-danger" id="btnConfirmProceed">确认取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 灵感随机唤醒浮层 -->
+<div id="wakeOverlay" class="decision-overlay" style="display:none">
+  <div class="decision-modal wake-modal" role="dialog" aria-modal="true" aria-labelledby="wakeTaskName">
+    <div class="wake-sparkle">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"></path></svg>
+    </div>
+    <span class="wake-badge" id="wakeBadgeText">灵感随机唤醒</span>
+    <h3 class="wake-task-name" id="wakeTaskName"></h3>
+    <div class="wake-hypo-box" id="wakeHypoBox" style="display:none">
+      <span class="wake-hypo-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle></svg>
+      </span>
+      <span class="wake-hypo-text" id="wakeHypoText"></span>
+    </div>
+    <p class="wake-modal-hint" id="wakeModalHint">给行动设止损点，先投 15 分钟验证。到点重新决定要不要继续，试错成本被锁死！</p>
+    <div class="wake-modal-actions">
+      <button type="button" class="btn-cancel" id="btnWakeClose">稍后再试</button>
+      <button type="button" class="btn-primary btn-wake-launch" id="btnWakeLaunch">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span id="btnWakeLaunchText">破冰启动 (15m)</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 优雅登录/注册弹窗浮层 (Auth Modal Overlay) -->
+<div class="auth-modal-overlay" id="authModalOverlay" style="display:none;">
+  <div class="auth-modal-box">
+    <button class="auth-modal-close" id="authModalClose" type="button" aria-label="关闭">✕</button>
+
+    <div class="auth-card" id="authPanel">
+      <div class="auth-header">
+        <div class="auth-brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="brand-logo-svg">
+            <circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="42 16" opacity="0.85"></circle>
+            <circle cx="12" cy="12" r="4.5" fill="currentColor" opacity="0.18"></circle>
+            <circle cx="12" cy="12" r="2.5" fill="currentColor"></circle>
+            <circle cx="18.5" cy="7.5" r="2" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <h2 class="auth-title" id="authTitle"></h2>
+        <p class="auth-subtitle" id="authSubtitle"></p>
+      </div>
+
+      <div class="segmented-tabs">
+        <button class="seg-tab on" id="tabL" type="button"></button>
+        <button class="seg-tab" id="tabR" type="button"></button>
+      </div>
+
+      <form id="authForm" class="subform">
+        <div class="field-group">
+          <div class="auth-input-wrap">
+            <svg class="auth-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input class="auth-input" id="aUser" autocomplete="username">
+          </div>
+          <div class="auth-input-wrap">
+            <svg class="auth-input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <input class="auth-input" id="aPass" type="password" autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="aerr" id="aErr" role="alert"></div>
+
+        <button class="btn-auth-submit" id="aGo" type="submit"></button>
+      </form>
+
+      <button class="btn-link" id="recoveryToggle" type="button"></button>
+
+      <form id="recoveryForm" class="subform" style="display:none">
+        <div class="field-group">
+          <div class="auth-input-wrap"><input class="auth-input" id="rcUser" autocomplete="username"></div>
+          <div class="auth-input-wrap"><input class="auth-input" id="rcCode" autocomplete="one-time-code"></div>
+          <div class="auth-input-wrap"><input class="auth-input" id="rcPass" type="password" autocomplete="new-password"></div>
+        </div>
+        <div class="aerr" id="rcErr" role="alert"></div>
+        <button class="btn-auth-submit" id="rcGo" type="submit"></button>
+      </form>
+
+      <div class="anote" id="aNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 顿悟时刻浮光卡片 (Aha Moment Float Card) -->
+<div id="milestoneToast" class="milestone-toast" style="display:none" role="status">
+  <div class="milestone-toast-icon">✦</div>
+  <div class="milestone-toast-body">
+    <div class="milestone-toast-title" id="milestoneToastTitle">恭喜完成一次清醒决断！</div>
+    <div class="milestone-toast-desc" id="milestoneToastDesc">免费注册账号，永久留存你的专注与止损轨迹并在多端实时同步。</div>
+  </div>
+  <div class="milestone-toast-actions">
+    <button type="button" class="btn-milestone-cta" id="btnMilestoneCta">去注册保存</button>
+    <button type="button" class="btn-milestone-dismiss" id="btnMilestoneDismiss" aria-label="关闭">✕</button>
+  </div>
+</div>
+
+<div id="toastBubble" class="toast-bubble" role="status"></div>
+
+<script type="module" src="/app/app.js?v=20260930_v6"></script>
+</body>
+</html>

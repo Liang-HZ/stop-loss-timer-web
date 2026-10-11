@@ -1,0 +1,27 @@
+name = "stop-loss-timer-web"
+compatibility_date = "2026-07-08"
+pages_build_output_dir = "public"
+
+# 部署前把 id 换成你自己的 KV namespace（`npx wrangler kv namespace create KV`）。
+[[kv_namespaces]]
+binding = "KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# 这里**故意不写 [vars]**。服务端要读的都是密钥（管理端 token 等），
+# wrangler.toml 是要进 git 的，写在这里等于把密钥提交到仓库。全部走 secret：
+#   npx wrangler pages secret put ADMIN_TOKEN
+# 未配置时对应接口自己会返回 403，不会带着空密钥裸奔。清单见 README「环境变量」。
+#
+# 本地开发不要用 secret，用 --binding（`wrangler pages dev` 不读进程环境变量）：
+#   npx wrangler pages dev --port 8788 --kv KV --binding ADMIN_TOKEN=dev-admin
+#
+# 邮箱找回的发信绑定不能写在这里：`[[send_email]]` **Pages Functions 不支持**（官方 Pages 绑定清单里
+# 没有 email 一项，它只在 Workers 里可用）。正确形状是 Service binding —— 另起一个持有 send_email 绑定的
+# Worker，Pages 这边只绑服务、用 fetch 调它（代码里已按这个形状写好）：
+#
+# [[services]]
+# binding = "SEND_EMAIL"
+# service = "my-mailer"
+#
+# 前提还有：域名要托管在 Cloudflare DNS 并 onboard 到 Email Service（`*.pages.dev` 是 Cloudflare 自己的
+# zone，onboard 不了）；免费档只能发给账户里已验证的目的地址，发给任意收件人要 Workers Paid。

@@ -1,0 +1,13 @@
+# ---- 通用 ----
+node_modules/
+.DS_Store
+dist/
+
+# ---- Cloudflare / Web ----
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# ---- 注意：以下是构建产物，但**必须提交** ----
+# public/core/ 由 `npm run build:core` 从 packages/core/ 生成，
+# Pages 不跑构建步骤，线上直接吃这份 ESM；CI 会校验它与源码同版。

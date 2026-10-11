@@ -1,0 +1,13 @@
+{
+  "name": "stop-loss-timer-web",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "到点重新决定：网页版（Cloudflare Pages + KV，零 npm 依赖）",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test \"packages/core/test/*.test.js\" \"functions/test/*.test.mjs\" \"public/app/test/*.test.js\"",
+    "check:html": "node scripts/check-html.mjs",
+    "build:core": "node scripts/build-core.mjs"
+  },
+  "//test": "node v24.11.1 下 `node --test <目录>` 会把目录当模块加载并报 MODULE_NOT_FOUND（已实测），因此用 glob 指定测试文件。"
+}

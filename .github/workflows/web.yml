@@ -1,0 +1,87 @@
+# Web（Cloudflare Pages）：测试 → 只有 main 上的 push 才部署。
+#
+# 为什么测试要跑两遍：收口标准要求「连续两遍全绿、零跳过、两遍之间不改源码」。
+# 一遍绿不能排除测试之间互相污染（共享模块级状态、假时钟没复位）这一类问题。
+#
+# 为什么要校验构建产物：public/core/ 是 packages/core 的构建产物，但它**要进仓库**
+# （Pages 不跑构建步骤）。所以 CI 必须确认提交上来的产物和源码是同一版——
+# 否则线上跑的是旧领域逻辑，测试却在测新的。
+name: Web
+
+on:
+  push:
+    paths:
+      - 'public/**'
+      - 'functions/**'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'wrangler.toml'
+      - '.github/workflows/web.yml'
+  pull_request:
+    paths:
+      - 'public/**'
+      - 'functions/**'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'wrangler.toml'
+      - '.github/workflows/web.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 记录工具链版本（出问题时第一眼要看的就是这个）
+        run: |
+          node --version
+          npm --version
+
+      # 本仓库零 npm 依赖，没有 lockfile 也没有 node_modules，所以不跑 npm ci。
+      - name: 确认真的没有依赖（有了就要改这条 CI，不能装作没看见）
+        run: |
+          if [ -d node_modules ] || [ -f package-lock.json ]; then
+            echo "::error::仓库出现了 npm 依赖。零依赖是硬约束（README「设计约束」），要引入请先改 CI 与 README。"
+            exit 1
+          fi
+
+      - name: 构建产物与源码一致（public/core）
+        run: |
+          npm run build:core
+          if ! git diff --exit-code -- public/core; then
+            echo "::error::packages/core 改了但构建产物没重新生成。本机跑 npm run build:core 后把产物一起提交。"
+            exit 1
+          fi
+
+      - name: 单测（两遍，之间不改源码）
+        run: |
+          npm test
+          npm test
+
+      - name: HTML 自检（标签配对、lang 属性、占位符登记）
+        run: node scripts/check-html.mjs
+
+  deploy:
+    # 只有 main 分支的 push 才部署；PR 不部署（PR 拿不到 secrets，也不该动线上）。
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 部署到 Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name stop-loss-timer-web
