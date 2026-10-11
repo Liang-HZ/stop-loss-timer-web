@@ -71,17 +71,27 @@ jobs:
 
   deploy:
     # 只有 main 分支的 push 才部署；PR 不部署（PR 拿不到 secrets，也不该动线上）。
+    # 没配 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID 时整段跳过：开源仓库克隆方
+    # 不见得要部署，红叉只该属于真正的问题。
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: production
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
     steps:
       - uses: actions/checkout@v4
 
+      - name: 未配置 Cloudflare 密钥，跳过部署
+        if: env.CF_API_TOKEN == '' || env.CF_ACCOUNT_ID == ''
+        run: echo "未配置 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets，跳过部署。配置方法见 README「部署」一节。"
+
       - name: 部署到 Cloudflare Pages
+        if: env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != ''
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wrangler-version: '4'
           command: pages deploy public --project-name stop-loss-timer-web
